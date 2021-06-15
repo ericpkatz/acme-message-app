@@ -12,7 +12,13 @@ class Routes extends Component {
   componentDidMount() {
     this.props.loadInitialData()
   }
+  componentDidUpdate(prevProps){
+    if(!prevProps.isLoggedIn && this.props.isLoggedIn){
+      this.props.loadUsers();
+      this.props.loadMessages();
+    }
 
+  }
   render() {
     const {isLoggedIn} = this.props
 
@@ -50,6 +56,20 @@ const mapDispatch = dispatch => {
   return {
     loadInitialData() {
       dispatch(me())
+    },
+    loadUsers: async()=> {
+      const response = await fetch('/api/users');
+      const users = await response.json();
+      dispatch({ type: 'SET_USERS', users});
+    },
+    loadMessages: async()=> {
+      const response = await fetch('/api/messages', {
+        headers: {
+          authorization: window.localStorage.getItem('token')
+        }
+      });
+      const messages = await response.json();
+      dispatch({ type: 'SET_MESSAGES', messages});
     }
   }
 }

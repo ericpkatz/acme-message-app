@@ -19,3 +19,14 @@ form div {
   margin: 1em;
   display: inline-block;
 }
+
+form.message-form {
+  margin: 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+form.message-form > * {
+  margin: 1rem;
+  height: 1.5rem;
+}

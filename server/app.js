@@ -10,6 +10,47 @@ app.use(morgan('dev'))
 // body parsing middleware
 app.use(express.json())
 
+const { db, models: { Message, User } } = require('./db');
+console.log(Object.keys(db.Sequelize));
+app.get('/api/messages', async(req, res, next)=> {
+  try {
+    const user = await User.findByToken(req.headers.authorization);
+    res.send(await Message.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { fromId: user.id },
+          { toId: user.id }
+        ]
+      },
+      include: [
+        { model: User, as: 'to'},
+        { model: User, as: 'from'}
+      ],
+      order: [
+        ['createdAt', 'desc']
+      ]
+    }));
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+app.post('/api/messages', async(req, res, next)=> {
+  try {
+    const user = await User.findByToken(req.headers.authorization);
+    const message = await Message.create({ text: req.body.text, fromId: user.id, toId: req.body.toId});
+    await message.reload({ include: [
+      { model: User, as: 'to'},
+      { model: User, as: 'from'}
+    ]});
+    res.send(message);
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
 // auth and api routes
 app.use('/auth', require('./auth'))
 app.use('/api', require('./api'))
