@@ -30,3 +30,10 @@ form.message-form > * {
   margin: 1rem;
   height: 1.5rem;
 }
+
+#chat{
+  display: flex;
+}
+#chat > * {
+  flex: 1;
+}
