@@ -11,7 +11,6 @@ app.use(morgan('dev'))
 app.use(express.json())
 
 const { db, models: { Message, User } } = require('./db');
-console.log(Object.keys(db.Sequelize));
 app.get('/api/messages', async(req, res, next)=> {
   try {
     const user = await User.findByToken(req.headers.authorization);
