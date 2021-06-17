@@ -5,7 +5,7 @@ import {connect} from 'react-redux'
  * COMPONENT
  */
 export const Home = props => {
-  const {username, users, messages, sendMessage} = props
+  const {auth, username, users, messages, sendMessage} = props
   const [toId, setToId] = useState('');
   const [text, setText] = useState('');
 
@@ -37,14 +37,12 @@ export const Home = props => {
         </div>
         <div>
           <h2>Messages ({ messages.length })</h2>
-          <ul>
+          <ul className='messages'>
               {
                 messages.map( message => {
                   return (
                     <li key={ message.id }>
-                      <pre>
-                        { JSON.stringify(message, null, 2) }
-                      </pre>
+                      <div>{ message.text } from <span>{ message.fromId === auth.id ? 'me' : message.from.username }</span> to <span>{ message.toId === auth.id ? 'me' : message.to.username }</span></div>
                     </li>
                   );
                 })
@@ -64,7 +62,8 @@ const mapState = state => {
   return {
     username: state.auth.username,
     users: state.users.filter( user => user.id !== state.auth.id),
-    messages: state.messages
+    messages: state.messages,
+    auth: state.auth
   }
 }
 
