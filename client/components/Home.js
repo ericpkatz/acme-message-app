@@ -66,7 +66,7 @@ const mapState = state => {
     auth: state.auth
   }
 }
-
+//TODO - move this logic to the store...
 const mapDispatch = dispatch => {
   return {
     sendMessage: async({ text, toId})=> {
@@ -78,7 +78,9 @@ const mapDispatch = dispatch => {
           authorization: window.localStorage.getItem('token')
         }
       });
-      dispatch({ type: 'ADD_MESSAGE', message: await response.json()});
+      const action = { type: 'ADD_MESSAGE', message: await response.json()};
+      dispatch(action);
+      window.socket.emit('action', action);
     }
   }
 }

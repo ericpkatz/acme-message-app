@@ -11,11 +11,15 @@ import {me} from './store'
 class Routes extends Component {
   componentDidMount() {
     this.props.loadInitialData()
+    window.socket.on('action', (action)=> {
+      this.props.dispatch(action);
+    });
   }
   componentDidUpdate(prevProps){
     if(!prevProps.isLoggedIn && this.props.isLoggedIn){
       this.props.loadUsers();
       this.props.loadMessages();
+      window.socket.emit('auth', this.props.auth);
     }
 
   }
@@ -48,7 +52,8 @@ const mapState = state => {
   return {
     // Being 'logged in' for our purposes will be defined has having a state.auth that has a truthy id.
     // Otherwise, state.auth will be an empty object, and state.auth.id will be falsey
-    isLoggedIn: !!state.auth.id
+    isLoggedIn: !!state.auth.id,
+    auth: state.auth
   }
 }
 
@@ -70,7 +75,8 @@ const mapDispatch = dispatch => {
       });
       const messages = await response.json();
       dispatch({ type: 'SET_MESSAGES', messages});
-    }
+    },
+    dispatch: (action)=> dispatch(action) 
   }
 }
 
